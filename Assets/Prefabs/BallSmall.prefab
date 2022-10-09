@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1034018965}
   m_Layer: 6
   m_Name: BallSmall
-  m_TagString: Untagged
+  m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -111,6 +111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37653f76c447f024eabc398da731cbb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ballPrefab: {fileID: 0}
 --- !u!54 &1034018965
 Rigidbody:
   m_ObjectHideFlags: 0

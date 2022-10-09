@@ -29,15 +29,6 @@ public class BallMovement : MonoBehaviour, IDestructible
         _rigidBody.AddForce(direction, ForceMode.Impulse);
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.transform.CompareTag("Player"))
-        {
-            Destroy(gameObject);
-        }
-    }
-
-
     public void Destruct()
     {
         if (ballPrefab != null)

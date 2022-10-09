@@ -301,6 +301,7 @@ MonoBehaviour:
   shootAimingTargetPos: {x: -0.552, y: 2.128, z: -0.726}
   bodyAimConstraint: {fileID: 2836581814729807076}
   animator: {fileID: 2836581814718711787}
+  playerShoot: {fileID: 1642411294}
 --- !u!1 &2836581815626880842
 GameObject:
   m_ObjectHideFlags: 0
@@ -692,5 +693,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 170.559
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 64617245995469756, guid: c25ac4fdc903e7d49a7520930673ecd6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: c25ac4fdc903e7d49a7520930673ecd6, type: 3}
