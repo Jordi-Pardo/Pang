@@ -8,17 +8,13 @@ using UnityEngine.Animations.Rigging;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public static Action OnDead;
+
 
     private const float rotationTime = 0.3f;
 
-    [SerializeField] private Transform aimTarget;
-    [SerializeField] private Vector3 runAimingTargetPos;
-    [SerializeField] private Vector3 shootAimingTargetPos = new Vector3(-0.368000001f, 1.96800005f, -0.493000001f);
-    [SerializeField] private MultiAimConstraint bodyAimConstraint;
     [SerializeField] private Animator animator;
 
-    [SerializeField] private PlayerShoot playerShoot;
+    private PlayerShoot _playerShoot;
 
     private bool _isRunning;
 
@@ -26,20 +22,22 @@ public class PlayerMovement : MonoBehaviour
 
     private float screenLimitOffset = 0.03f;
 
+    private void Awake()
+    {
+        _playerShoot = GetComponent<PlayerShoot>();
+    }
+
     void Update()
     {
-        HandleInputs();
-
         HandleMovement();
     }
 
     private void HandleMovement()
     {
-        if (playerShoot.IsShooting)
+        if (_playerShoot.IsShooting)
             return;
 
-        aimTarget.localPosition = Vector3.Lerp(aimTarget.localPosition, runAimingTargetPos, Time.deltaTime * 30f);
-
+        _playerShoot.AimToRun();
         float x = Input.GetAxisRaw("Horizontal");
         _isRunning = x != 0;
         animator.SetBool("IsRunning", _isRunning);
@@ -58,51 +56,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void HandleInputs()
-    {
-        //Can shoot only when hook is disabled and you clicked
-        if (Input.GetMouseButtonDown(0) && !playerShoot.GetHook().isActiveAndEnabled)
-        {
-            StartCoroutine(Shoot());
-        }
-
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.transform.CompareTag("Ball"))
-        {
-            Destroy(collision.gameObject);
-            OnDead?.Invoke();
-        }
-    }
-
-    public IEnumerator Shoot()
-    {
-        bool completed = false;
-
-        playerShoot.Shoot();
-        animator.SetBool("IsShooting", playerShoot.IsShooting);
-        bodyAimConstraint.weight = 1;
 
 
-        while (!completed)
-        {
-            aimTarget.localPosition = Vector3.Lerp(aimTarget.localPosition, shootAimingTargetPos, Time.deltaTime * 30f);
-            if (Vector3.Distance(aimTarget.localPosition, shootAimingTargetPos) > 0.05f)
-            {
-                yield return null;
-            }
-            else
-            {
-                completed = true;
-            }
-        }
 
-        playerShoot.IsShooting = false;
-        animator.SetBool("IsShooting", playerShoot.IsShooting);
-        bodyAimConstraint.weight = 0;
-
-    }
 
 }

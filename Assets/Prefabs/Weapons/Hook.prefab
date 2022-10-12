@@ -12,13 +12,13 @@ GameObject:
   - component: {fileID: 547179119005867436}
   - component: {fileID: 1836805606}
   - component: {fileID: 1836805605}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Hook
   m_TagString: Hook
   m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5682180028783831333
 Transform:
   m_ObjectHideFlags: 0
@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 5682180028783831332}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.0000002, y: 1, z: 1.0000002}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2445356689779084036}
@@ -88,6 +88,10 @@ PrefabInstance:
     - target: {fileID: 1454435361946636, guid: f7f9075092adedc429950e5d74a37e7a, type: 3}
       propertyPath: m_Name
       value: SM_Primitive_Cylander_05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1454435361946636, guid: f7f9075092adedc429950e5d74a37e7a, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1454435361946636, guid: f7f9075092adedc429950e5d74a37e7a, type: 3}
       propertyPath: m_TagString
@@ -173,6 +177,10 @@ PrefabInstance:
     - target: {fileID: 1039438576677634, guid: 677ea415eda081c449893c7f11c4169b, type: 3}
       propertyPath: m_Name
       value: SM_Primitive_Cone_05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1039438576677634, guid: 677ea415eda081c449893c7f11c4169b, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1039438576677634, guid: 677ea415eda081c449893c7f11c4169b, type: 3}
       propertyPath: m_TagString
