@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Schema;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
@@ -18,62 +20,31 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private PlayerShoot playerShoot;
 
-    private Rigidbody _rigidbody;
-    private bool _isShooting;
     private bool _isRunning;
 
     private float _moveSpeed = 5f;
-    private int _direction = 0;
 
-    private void Awake()
-    {
-        _rigidbody = GetComponent<Rigidbody>();
-    }
+    private float screenLimitOffset = 0.03f;
 
     void Update()
     {
         HandleInputs();
 
-        if (_isShooting)
-        {
-            aimTarget.localPosition = Vector3.Lerp(aimTarget.localPosition, shootAimingTargetPos, Time.deltaTime * 30f);
-        }
-        else
-        {
-            aimTarget.localPosition = Vector3.Lerp(aimTarget.localPosition, runAimingTargetPos, Time.deltaTime * 30f);
-
-        }
-
- 
+        HandleMovement();
     }
 
-    private void HandleInputs()
+    private void HandleMovement()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (playerShoot.GetHook().isActiveAndEnabled)
-                return;
+        if (playerShoot.IsShooting)
+            return;
 
-            bodyAimConstraint.weight = 1;
-            _isShooting = true;
-            animator.SetBool("IsShooting", _isShooting);
-
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            bodyAimConstraint.weight = 0;
-            _isShooting = false;
-            animator.SetBool("IsShooting", _isShooting);
-        }
+        aimTarget.localPosition = Vector3.Lerp(aimTarget.localPosition, runAimingTargetPos, Time.deltaTime * 30f);
 
         float x = Input.GetAxisRaw("Horizontal");
         _isRunning = x != 0;
         animator.SetBool("IsRunning", _isRunning);
-
-        if (_isShooting)
+        if (Camera.main.WorldToViewportPoint(gameObject.transform.position).x > 1 - screenLimitOffset && x > 0 || Camera.main.WorldToViewportPoint(gameObject.transform.position).x < 0 + screenLimitOffset && x < 0)
             return;
-
         if (x > 0)
         {
             transform.position += _moveSpeed * Time.deltaTime * Vector3.right;
@@ -85,7 +56,15 @@ public class PlayerMovement : MonoBehaviour
             transform.position += _moveSpeed * Time.deltaTime * Vector3.left;
             iTween.RotateTo(gameObject, new Vector3(0, 270f, 0), rotationTime);
         }
+    }
 
+    private void HandleInputs()
+    {
+        //Can shoot only when hook is disabled and you clicked
+        if (Input.GetMouseButtonDown(0) && !playerShoot.GetHook().isActiveAndEnabled)
+        {
+            StartCoroutine(Shoot());
+        }
 
     }
 
@@ -93,8 +72,37 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collision.transform.CompareTag("Ball"))
         {
-            GameManager.instance.OnPlayerDie?.Invoke();
+            Destroy(collision.gameObject);
+            OnDead?.Invoke();
         }
+    }
+
+    public IEnumerator Shoot()
+    {
+        bool completed = false;
+
+        playerShoot.Shoot();
+        animator.SetBool("IsShooting", playerShoot.IsShooting);
+        bodyAimConstraint.weight = 1;
+
+
+        while (!completed)
+        {
+            aimTarget.localPosition = Vector3.Lerp(aimTarget.localPosition, shootAimingTargetPos, Time.deltaTime * 30f);
+            if (Vector3.Distance(aimTarget.localPosition, shootAimingTargetPos) > 0.05f)
+            {
+                yield return null;
+            }
+            else
+            {
+                completed = true;
+            }
+        }
+
+        playerShoot.IsShooting = false;
+        animator.SetBool("IsShooting", playerShoot.IsShooting);
+        bodyAimConstraint.weight = 0;
+
     }
 
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,8 +9,13 @@ public class BallMovement : MonoBehaviour, IDestructible
     private Vector3 firstImpact;
     [SerializeField] private BallMovement ballPrefab;
 
-    bool first = false;
+    [SerializeField] private int ballScore;
+
+    public static event Action<int,GameObject> OnUpdateScore;
+
     public bool IsInstantiated { get; set; }
+
+
     private void Awake()
     {
         IsInstantiated = false;
@@ -18,6 +24,7 @@ public class BallMovement : MonoBehaviour, IDestructible
 
     private void Start()
     {
+
         if (IsInstantiated)
             return;
 
@@ -33,15 +40,19 @@ public class BallMovement : MonoBehaviour, IDestructible
     {
         if (ballPrefab != null)
         {
-            BallMovement ballMovement = Instantiate(ballPrefab,transform.position,Quaternion.identity);
+            BallMovement ballMovement = Instantiate(ballPrefab,transform.position,Quaternion.identity,transform.parent);
+            GameManager.instance.AddBall(ballMovement.gameObject);
             ballMovement.IsInstantiated = true;
             ballMovement.AddForceDirection(new Vector3(-4, 4, 0));
-            ballMovement = Instantiate(ballPrefab,transform.position,Quaternion.identity);
+            ballMovement = Instantiate(ballPrefab,transform.position,Quaternion.identity,transform.parent);
+            GameManager.instance.AddBall(ballMovement.gameObject);
             ballMovement.IsInstantiated = true;
             ballMovement.AddForceDirection(new Vector3(4, 4, 0));
         }
 
-        Debug.Log("Add 2000 puntos");
+        OnUpdateScore?.Invoke(ballScore,gameObject);
+
         Destroy(gameObject);
     }
+
 }
