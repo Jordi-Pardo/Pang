@@ -6,6 +6,7 @@ using UnityEngine;
 public abstract class PowerUp : MonoBehaviour, IPowerUp, IDestructible
 {
     [SerializeField] private GameObject bubbleVisual;
+    [SerializeField] private Transform visualContainer;
     private SphereCollider _sphereCollider;
 
     private bool destroyActivated = false;
@@ -15,7 +16,12 @@ public abstract class PowerUp : MonoBehaviour, IPowerUp, IDestructible
         _sphereCollider = GetComponent<SphereCollider>();
     }
 
-    public abstract void Activate(GameObject gameObject,Action action);
+    private void Update()
+    {
+        visualContainer.Rotate(Vector3.up, 90f * Time.deltaTime);
+    }
+
+    public abstract void Activate(GameObject gameObject,Action action,Transform transform);
     public void Destruct()
     {
         bubbleVisual.SetActive(false);

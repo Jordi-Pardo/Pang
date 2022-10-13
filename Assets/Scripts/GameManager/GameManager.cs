@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
         Hard,
     }
 
-    private const int POWER_UP_SPAWN_RATIO = 10;
+    private const int POWER_UP_SPAWN_RATIO = 5;
     public List<GameObject> powerUps = new List<GameObject>();
 
     //Singleton
@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
     public event Action<string,string> OnPlayerWin;
     public event Action OnPlayerLose;
     public event Action<string> OnUpdateTime;
+    public event Action<string> OnUpdateCountDown;
+    public event Action OnCountDownEnds;
     public event Action<string> OnUpdateScore;
 
     //Dificulty
@@ -41,12 +43,18 @@ public class GameManager : MonoBehaviour
     private float gameTime;
     private float initTime = 20f;
 
+    //CountDown
+    private float countdownTime;
+    private float initCountdownTime = 3f;
+
     //Score
     private int _score = 0;
 
     public int Score { get => _score; set => _score = value; }
 
     public bool Freezed = false;
+
+    public bool started = false;
 
     private void Awake()
     {
@@ -59,23 +67,56 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1;
         AddAllBalls();
         DifficultySettings();
+        SetupCountDown();
         SetupTimer();
-
-        Time.timeScale = 1;
-
+        StopAllBalls(false);
     }
 
     private void Update()
     {
-       UpdateTimer();
+        UpdateCountDown();
+        UpdateTimer();
+    }
+
+    private void UpdateCountDown()
+    {
+        if (countdownTime <= 0)
+            return;
+
+        int firstTimeInt = Mathf.CeilToInt(countdownTime);
+        countdownTime -= Time.deltaTime;
+
+        int gameTimeInt = Mathf.CeilToInt(countdownTime);
+
+
+        if ((firstTimeInt - gameTimeInt) == 1)
+        {
+            OnUpdateCountDown?.Invoke(gameTimeInt.ToString());
+
+            if (gameTimeInt == 0)
+            {
+                OnCountDownEnds?.Invoke();
+                foreach (var ball in ballsList)
+                {
+                    ball.ResumeFromFreezed();
+                }
+                started = true;
+            }
+        }
     }
 
     private void SetupTimer()
     {
         gameTime = initTime;
         OnUpdateTime?.Invoke(Mathf.CeilToInt(gameTime).ToString());
+    }
+    private void SetupCountDown()
+    {
+        countdownTime = initCountdownTime;
+        OnUpdateCountDown?.Invoke(Mathf.CeilToInt(countdownTime).ToString());
     }
 
     private void DifficultySettings()
@@ -126,7 +167,7 @@ public class GameManager : MonoBehaviour
 
     public void UpdateTimer()
     {
-        if (gameTime <= 0)
+        if (gameTime <= 0 || !started)
             return;
 
         int firstTimeInt = Mathf.CeilToInt(gameTime);
@@ -170,6 +211,9 @@ public class GameManager : MonoBehaviour
 
     private void TryToSpawnPowerUp(Vector3 position)
     {
+        if (powerUps.Count <= 0)
+            return;
+
         int randomProbability = UnityEngine.Random.Range(0, 100);
         if(randomProbability < POWER_UP_SPAWN_RATIO)
         {
@@ -187,20 +231,20 @@ public class GameManager : MonoBehaviour
     }
     public IEnumerator StartFreeze()
     {
-        StopAllBalls();
+        StopAllBalls(true);
         Debug.Log("Stopped all balls");
         yield return new WaitForSeconds(5f);
         Debug.Log("Resume all balls");
         ResumeAllBalls();
     }
 
-    public void StopAllBalls()
+    public void StopAllBalls(bool value)
     {
         foreach (var ball in ballsList)
         {
             ball.GetComponent<Ball>().Freeze();
         }
-        Freezed = true;
+        Freezed = value;
     }
 
     public void ResumeAllBalls()

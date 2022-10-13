@@ -110,6 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bubbleVisual: {fileID: 6536801517531290494}
+  visualContainer: {fileID: 4096522574163988819}
 --- !u!1 &6536776760942013187
 GameObject:
   m_ObjectHideFlags: 0

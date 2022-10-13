@@ -4,5 +4,5 @@ using UnityEngine;
 public interface IPowerUp
 {
     public void OnSpawn();
-    public void Activate(GameObject gameObject,Action callback);
+    public void Activate(GameObject gameObject,Action callback,Transform transform);
 }

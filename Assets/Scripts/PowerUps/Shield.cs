@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Shield : PowerUp
 {
-    public override void Activate(GameObject gameObject,Action callback)
+    public override void Activate(GameObject gameObject,Action callback, Transform transform)
     {
         gameObject.SetActive(true);
     }

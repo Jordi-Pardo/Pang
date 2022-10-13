@@ -5,8 +5,11 @@ using UnityEngine;
 
 public class StopWatch : PowerUp
 {
-    public override void Activate(GameObject gameObject, Action action)
+    public override void Activate(GameObject gameObject, Action action, Transform transform)
     {
-        action?.Invoke();
+        if (!GameManager.instance.Freezed)
+        {
+            action?.Invoke();
+        }
     }
 }

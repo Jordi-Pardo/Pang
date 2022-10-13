@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
 
         if (collision.transform.TryGetComponent(out IPowerUp powerUp))
         {
-            powerUp.Activate(shieldVisual, GameManager.instance.StartStopWatch);
+            powerUp.Activate(shieldVisual, GameManager.instance.StartStopWatch,transform);
             Destroy(collision.gameObject);
         }
     }

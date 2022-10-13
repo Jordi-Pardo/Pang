@@ -29,6 +29,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (!GameManager.instance.started)
+            return;
+
         HandleMovement();
     }
 

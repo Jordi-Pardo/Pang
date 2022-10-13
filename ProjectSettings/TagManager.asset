@@ -9,6 +9,7 @@ TagManager:
   - Rooftop
   - PlayerEyes
   - Ball
+  - Wall
   layers:
   - Default
   - TransparentFX

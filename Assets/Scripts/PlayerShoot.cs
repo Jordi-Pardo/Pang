@@ -1,3 +1,5 @@
+using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +12,10 @@ public class PlayerShoot : MonoBehaviour
         Hook,
         Rifle
     }
+
+    public static event Action<int> OnPlayerShootRifle;
+    public static event Action<Weapon,int> OnPlayerChangeWeapon;
+
     [SerializeField] private MultiAimConstraint bodyAimConstraint;
     [SerializeField] private Animator animator;
 
@@ -31,9 +37,12 @@ public class PlayerShoot : MonoBehaviour
     private float fireTime = 0;
     public bool IsShooting { get; set; }
 
+
+
     private void Start()
     {
         currentWeapon = Weapon.Hook;
+        OnPlayerChangeWeapon(currentWeapon,0);
     }
 
     public void ShootHook()
@@ -47,6 +56,11 @@ public class PlayerShoot : MonoBehaviour
 
     private void Update()
     {
+
+
+        if (!GameManager.instance.started)
+            return;
+
         HandleInputs();
 
         if (IsShooting)
@@ -62,15 +76,19 @@ public class PlayerShoot : MonoBehaviour
             bodyAimConstraint.weight = 0;
         }
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        //HELPER
+        if (Input.GetKeyDown(KeyCode.H))
         {
             currentWeapon = Weapon.Hook;
+            OnPlayerChangeWeapon(currentWeapon,0);
         }
-        else if (Input.GetKeyDown(KeyCode.E))
+        else if (Input.GetKeyDown(KeyCode.R))
         {
             currentRifleAmmo = maxFifleAmmo;
             currentWeapon = Weapon.Rifle;
+            OnPlayerChangeWeapon(currentWeapon,currentRifleAmmo);
         }
+
 
         if (Input.GetMouseButton(0) && currentWeapon == Weapon.Rifle && currentRifleAmmo > 0)
         {
@@ -95,26 +113,22 @@ public class PlayerShoot : MonoBehaviour
                 IsShooting = true;
                 Instantiate(bullet, shootPoint.position, Quaternion.identity,bulletContainer);
                 currentRifleAmmo--;
+                OnPlayerShootRifle?.Invoke(currentRifleAmmo);
+
                 if(currentRifleAmmo == 0)
                 {
                     currentWeapon = Weapon.Hook;
+                    OnPlayerChangeWeapon?.Invoke(currentWeapon,0);
                     IsShooting = false;
                 }
             }
         }
     }
 
-    public void ShootRifle()
-    {
-
-    }
-
-    public Hook GetHook() => hook;
-
     private void HandleInputs()
     {
         //Can shoot only when hook is disabled and you clicked
-        if (currentWeapon == PlayerShoot.Weapon.Hook && Input.GetMouseButtonDown(0) && !GetHook().isActiveAndEnabled)
+        if (currentWeapon == Weapon.Hook && Input.GetMouseButtonDown(0) && !hook.isActiveAndEnabled)
         {
             StartCoroutine(Shoot());
         }
@@ -149,5 +163,12 @@ public class PlayerShoot : MonoBehaviour
     public void AimToRun()
     {
         aimTarget.localPosition = Vector3.Lerp(aimTarget.localPosition, runAimingTargetPos, Time.deltaTime * 30f);
+    }
+
+    public void PickUpRifle()
+    {
+        currentRifleAmmo += maxFifleAmmo;
+        currentWeapon = Weapon.Rifle;
+        OnPlayerChangeWeapon(currentWeapon, currentRifleAmmo);
     }
 }

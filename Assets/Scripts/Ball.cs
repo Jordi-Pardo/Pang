@@ -36,7 +36,7 @@ public class Ball : MonoBehaviour, IDestructible
             return;
         }
 
-        AddForceDirection(new Vector3(-4,4,0));
+        //AddForceDirection(new Vector3(-4,4,0));
     }
 
     public void AddForceDirection(Vector3 direction)
@@ -65,11 +65,11 @@ public class Ball : MonoBehaviour, IDestructible
         {
             if(force.x > 0)
             {
-                addOffset = new Vector3(0.2f, 0, 0);
+                addOffset = new Vector3(0.3f, 0, 0);
             }
             else
             {
-                addOffset = new Vector3(-0.2f, 0, 0);
+                addOffset = new Vector3(-0.3f, 0, 0);
             }
         }
 
@@ -102,5 +102,19 @@ public class Ball : MonoBehaviour, IDestructible
         _rigidBody.useGravity = true;
         _rigidBody.velocity = lastVelocity;
     }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.transform.CompareTag("Wall"))
+        {
+            Vector3 vector3 = collision.relativeVelocity;
+            vector3.y = 0;
+            vector3.z = 0;
+            if (Mathf.Abs(vector3.x) < 2f)
+            {
+                _rigidBody.AddForce(vector3, ForceMode.Impulse);
+            }
+            Debug.Log(collision.relativeVelocity.x);
 
+        }
+    }
 }
