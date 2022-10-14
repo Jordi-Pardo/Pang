@@ -22,4 +22,4 @@ Time depends on each level dificulty, depending on how many balls are at the sta
 - A and D to move horizontally
 - Left Mouse Button to shot
 
-Tip: If yor are struggling at level 3. You can press R and get rifle ammo or press H and get your hook again.
+Tip: If you're struggling at level 3. You can press R and get rifle ammo or press H and get your hook again.
